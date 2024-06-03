@@ -1,0 +1,9 @@
+.list {
+  display: flex;
+  gap: 16px;
+}
+
+.image {
+  height: 80px;
+  width: auto;
+}
