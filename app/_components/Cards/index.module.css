@@ -1,5 +1,5 @@
 .cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr); /*ToDo: レスポンシブに変更する。スマホのときは1列とか2列とか*/
   gap: 64px;
 }
