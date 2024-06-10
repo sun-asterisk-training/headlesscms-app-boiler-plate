@@ -1,0 +1,18 @@
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.content {
+    max-width: 800px;
+    width: 100%;
+}
+
+.title {
+    text-align: center;
+}
+
+.thumbnail {
+    border-radius: 8%;
+    overflow: hidden;
+}
