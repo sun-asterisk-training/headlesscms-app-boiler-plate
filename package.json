@@ -21,7 +21,12 @@
     "node": ">=18.x"
   },
   "dependencies": {
+    "@emotion/cache": "^11.11.0",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@google-analytics/data": "^4.0.0",
+    "@mui/material": "^5.15.20",
+    "@mui/material-nextjs": "^5.15.11",
     "@types/node": "20.5.0",
     "@types/react": "18.2.20",
     "@types/react-dom": "18.2.7",

@@ -9,6 +9,7 @@ type Props = {
 
 export default function Card({ article }: Props) {
   return (
+
     <Link href={`/articles/${article.id}`}>
       <Image
         src={article.thumbnail.url}
