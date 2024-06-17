@@ -1,6 +1,6 @@
 import { Article } from '@/_libs/microcms';
-import Card from '@/_components/Card';
-import styles from './index.module.css';
+import CustomCard from '@/_components/Card';
+import { Grid } from '@mui/material';
 
 type Props = {
   articles: Article[];
@@ -11,12 +11,12 @@ export default function Cards({ articles }: Props) {
     return <p>記事がありません。</p>;
   }
   return (
-    <ul className={styles.cards}>
-      {articles.map((article) => (
-        <li key={article.id}>
-          <Card article={article} />
-        </li>
-      ))}
-    </ul>
+      <Grid container spacing={4}>
+        {articles.map((article) => (
+            <Grid item xs={12} sm={6} md={4} key={article.id}>
+              <CustomCard article={article} />
+            </Grid>
+        ))}
+      </Grid>
   );
 }
