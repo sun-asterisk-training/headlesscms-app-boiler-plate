@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Article } from '@/_libs/microcms';
 import PublishDate from '@/_components/PublishDate';
 import { Card, CardActionArea, CardContent, CardMedia, Typography, CardActions, Button } from '@mui/material';
