@@ -2,7 +2,7 @@ import { Category } from '@/_libs/microcms';
 import Link from 'next/link';
 
 type Props = {
-  category: Category;
+  category: { id: string; name: string };
 };
 
 export default function Category({ category }: Props) {

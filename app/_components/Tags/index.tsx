@@ -3,7 +3,7 @@ import Tag from '@/_components/Tag';
 import styles from './index.module.css';
 
 type Props = {
-  tags: TagType[];
+  tags: { id: string; name: string }[];
 };
 
 export default function Tags({ tags }: Props) {
