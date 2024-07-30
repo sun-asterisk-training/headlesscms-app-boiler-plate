@@ -126,3 +126,20 @@ schedule:
 
 オンにしたい場合は`app/layout.tsx`内のスクリプト読み込み部分と、`app/_components/Ad/index.tsx`内のコメントアウトを解除してください。
 その際には、`data-ad-client`などの値は Adsense から取得してきた値に適宜変更してください。
+
+## 2024/07/30 追記
+
+2024/07/30 feature/nilto-fetch-and-display-article-details ブランチの時点での`.env.local`ファイルは以下のようになっています。
+
+```
+NEXT_PUBLIC_MICROCMS_GET_API_KEY=xxxxx
+NEXT_PUBLIC_MICROCMS_SERVICE_DOMAIN=xxxxx
+BASE_URL=http://localhost:3000/
+# NEXT_PUBLIC_GTM_ID=GTM-xxxxxxxx
+
+NEXT_PUBLIC_NILTO_API_KEY=xxxxx
+NEXT_PUBLIC_NILTO_BASE_URL=https://cms-api.nilto.com/v1/
+
+# MEMO: nilto or microcms
+NEXT_PUBLIC_TYPE_CMS=nilto
+```
