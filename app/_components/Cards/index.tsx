@@ -7,11 +7,11 @@ type Props = {
     | Article[] // TODO: すべてのページでmicrocmsとniltoの切り替え対応が完了後、型Articleは不要になるはずなので削除する
     | {
         id: string;
-        title: string;
-        description: string;
+        title?: string;
+        description?: string;
         thumbnail: {
           url: string;
-        };
+        } | null;
         publishedAt?: string | null;
         createdAt: string;
       }[];

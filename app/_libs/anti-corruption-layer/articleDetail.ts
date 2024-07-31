@@ -2,18 +2,21 @@ import { Article, getArticleDetail } from '../microcms';
 import { ArticleDetailResponse, fetchArticleDetail } from '../nilto/articleDetail';
 import { TYPE_CMS, TypeCMS } from '../utils';
 
+const THUMBNAIL_WIDTH = 800;
+const THUMBNAIL_HEIGHT = 600;
+
 // 記事詳細の型定義
 export type TransformedArticleDetailResponse = {
   id: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   publishedAt?: string | null;
   createdAt: string;
   thumbnail: {
     url: string;
     width: number;
     height: number;
-  };
+  } | null;
   category: {
     id: string;
     name: string;
@@ -33,7 +36,7 @@ export type TransformedArticleDetailResponse = {
     description: string;
     thumbnail: {
       url: string;
-    };
+    } | null;
     publishedAt?: string | null;
     createdAt: string;
   }[];
@@ -57,7 +60,11 @@ export const fetchArticleDetailCMSData = async (
   }
 };
 
-const createThumbnail = (url: string, width: number = 800, height: number = 600) => ({
+const createThumbnail = (
+  url: string,
+  width: number = THUMBNAIL_WIDTH,
+  height: number = THUMBNAIL_HEIGHT,
+) => ({
   url,
   width,
   height,
@@ -86,26 +93,40 @@ const transformNiltoData = (niltoData: ArticleDetailResponse): TransformedArticl
     description: niltoData.description,
     publishedAt: niltoData._published_at,
     createdAt: niltoData._created_at,
-    thumbnail: createThumbnail(niltoData.thumbnail.url),
-    category: {
-      id: niltoData.category._id.toString(),
-      name: niltoData.category.name,
-    },
-    tags: niltoData.tags.map((tag) => ({
-      id: tag.tag._id.toString(),
-      name: tag.tag.name,
-    })),
+    thumbnail: niltoData.thumbnail ? createThumbnail(niltoData.thumbnail.url) : null,
+    category: niltoData.category
+      ? {
+          id: niltoData.category._id.toString(),
+          name: niltoData.category.name,
+        }
+      : null,
+    tags:
+      niltoData.tags.length > 0
+        ? niltoData.tags
+            .filter((tag) => tag.tag)
+            .map((tag) => ({
+              id: tag.tag._id.toString(),
+              name: tag.tag.name,
+            }))
+        : [],
     content: content,
-    relatedArticles: niltoData.related_articles.map((article) => ({
-      id: article.related_article._id.toString(),
-      title: article.related_article.title,
-      description: article.related_article.description,
-      thumbnail: {
-        url: article.related_article.thumbnail.url,
-      },
-      publishedAt: article.related_article._published_at,
-      createdAt: article.related_article._created_at,
-    })),
+    relatedArticles:
+      niltoData.related_articles.length > 0
+        ? niltoData.related_articles
+            .filter((article) => article.related_article)
+            .map((article) => ({
+              id: article.related_article._id.toString(),
+              title: article.related_article.title,
+              description: article.related_article.description,
+              thumbnail: article.related_article.thumbnail
+                ? {
+                    url: article.related_article.thumbnail.url,
+                  }
+                : null,
+              publishedAt: article.related_article._published_at,
+              createdAt: article.related_article._created_at,
+            }))
+        : [],
   };
 };
 
@@ -115,32 +136,42 @@ const transformMicroCMSData = (microCMSData: Article): TransformedArticleDetailR
   description: microCMSData.description,
   publishedAt: microCMSData.publishedAt,
   createdAt: microCMSData.createdAt,
-  thumbnail: createThumbnail(
-    microCMSData.thumbnail.url,
-    microCMSData.thumbnail.width,
-    microCMSData.thumbnail.height,
-  ),
+  thumbnail: microCMSData.thumbnail
+    ? createThumbnail(
+        microCMSData.thumbnail.url,
+        microCMSData.thumbnail.width,
+        microCMSData.thumbnail.height,
+      )
+    : null,
   category: microCMSData.category
     ? {
         id: microCMSData.category.id,
         name: microCMSData.category.name,
       }
     : null,
-  tags: microCMSData.tags.map((tag) => ({
-    id: tag.id,
-    name: tag.name,
-  })),
+  tags:
+    microCMSData.tags.length > 0
+      ? microCMSData.tags.map((tag) => ({
+          id: tag.id,
+          name: tag.name,
+        }))
+      : [],
   content: microCMSData.content,
-  relatedArticles: microCMSData.relatedArticles.map((article) => ({
-    id: article.id,
-    title: article.title,
-    description: article.description,
-    thumbnail: {
-      url: article.thumbnail.url,
-    },
-    publishedAt: article.publishedAt,
-    createdAt: article.createdAt,
-  })),
+  relatedArticles:
+    microCMSData.relatedArticles.length > 0
+      ? microCMSData.relatedArticles.map((article) => ({
+          id: article.id,
+          title: article.title,
+          description: article.description,
+          thumbnail: article.thumbnail
+            ? {
+                url: article.thumbnail.url,
+              }
+            : null,
+          publishedAt: article.publishedAt,
+          createdAt: article.createdAt,
+        }))
+      : [],
 });
 
 export const transformResponse = (

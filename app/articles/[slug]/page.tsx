@@ -35,7 +35,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     openGraph: {
       title: data.title,
       description: data.description,
-      images: data.thumbnail.url,
+      images: data.thumbnail?.url,
     },
   };
 }
@@ -48,29 +48,32 @@ export default async function Page({ params, searchParams }: Props) {
       <Main>
         <div className={styles.container}>
           <div className={styles.content}>
-            <h1 className={styles.title}>{data.title}</h1>
+            {data.title && <h1 className={styles.title}>{data.title}</h1>}
             <div>カテゴリー：{data.category && <Category category={data.category} />}</div>
-            <div>タグ：{data.tags && <Tags tags={data.tags} />}</div>
+            <div>タグ：{data.tags.length > 0 && <Tags tags={data.tags} />}</div>
             <div>
               <PublishDate date={data.publishedAt || data.createdAt} />
             </div>
-            <div className={styles.thumbnail}>
-              <Image
-                src={data.thumbnail.url}
-                alt=""
-                width={data.thumbnail.width}
-                height={data.thumbnail.height}
-              />
-            </div>
-            {data.content.map((item, i) => {
-              if (item.fieldId === 'richEditor' && item.richEditor) {
-                return <RichEditor key={i} content={item.richEditor} />;
-              }
-              if (item.fieldId === 'ad' && item.ad) {
-                return <Ad key={i} />;
-              }
-              return null;
-            })}
+            {data.thumbnail && (
+              <div className={styles.thumbnail}>
+                <Image
+                  src={data.thumbnail.url}
+                  alt=""
+                  width={data.thumbnail.width}
+                  height={data.thumbnail.height}
+                />
+              </div>
+            )}
+            {data.content.length > 0 &&
+              data.content.map((item, i) => {
+                if (item.fieldId === 'richEditor' && item.richEditor) {
+                  return <RichEditor key={i} content={item.richEditor} />;
+                }
+                if (item.fieldId === 'ad' && item.ad) {
+                  return <Ad key={i} />;
+                }
+                return null;
+              })}
             {data.relatedArticles.length > 0 && (
               <>
                 <h2>関連記事</h2>
