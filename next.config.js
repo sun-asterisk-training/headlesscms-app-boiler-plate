@@ -7,6 +7,7 @@ const nextConfig = {
         hostname: 'images.microcms-assets.io',
       },
     ],
+    domains: ['cms-assets.nilto.com'],
   },
 };
 
