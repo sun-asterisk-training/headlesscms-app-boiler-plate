@@ -64,22 +64,19 @@ export default async function Page({ params, searchParams }: Props) {
                 />
               </div>
             )}
-            {data.content.length > 0 &&
-              data.content.map((item, i) => {
-                if (item.fieldId === 'richEditor' && item.richEditor) {
-                  return <RichEditor key={i} content={item.richEditor} />;
-                }
-                if (item.fieldId === 'ad' && item.ad) {
-                  return <Ad key={i} />;
-                }
-                return null;
-              })}
-            {data.relatedArticles.length > 0 && (
-              <>
-                <h2>関連記事</h2>
-                <Cards articles={data.relatedArticles} />
-              </>
-            )}
+            {data.content.map((item, i) => {
+              if (item.fieldId === 'richEditor' && item.richEditor) {
+                return <RichEditor key={i} content={item.richEditor} />;
+              }
+              if (item.fieldId === 'ad' && item.ad) {
+                return <Ad key={i} />;
+              }
+              return null;
+            })}
+            <div>
+              <h2>関連記事</h2>
+              <Cards articles={data.relatedArticles} />
+            </div>
           </div>
         </div>
       </Main>
