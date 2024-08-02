@@ -1,4 +1,4 @@
-import { getPickup } from '@/_libs/microcms';
+import { fetchPickupData } from '@/_libs/anti-corruption-layer/pickup';
 import { RANKING_LIMIT } from '@/_constants';
 import List from '@/_components/List';
 
@@ -7,10 +7,7 @@ type Props = {
 };
 
 export default async function Pickup({ draftKey }: Props) {
-  const data = await getPickup({
-    limit: RANKING_LIMIT,
-    draftKey,
-  }).catch(() => ({ articles: [] }));
+  const data = await fetchPickupData(RANKING_LIMIT, draftKey).catch(() => ({ articles: [] }));
   const articles = data.articles;
   return (
     <div>

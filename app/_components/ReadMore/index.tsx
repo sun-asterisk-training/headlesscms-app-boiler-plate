@@ -1,9 +1,12 @@
 'use client';
 
 import { FC, useState, useCallback } from 'react';
-import { getArticleList, Article } from '@/_libs/microcms';
+import { fetchArticleListData } from '@/_libs/anti-corruption-layer/articleList';
+import { TransformedArticleDetailResponse } from '@/_libs/anti-corruption-layer/articleDetail';
 import { LIMIT } from '@/_constants';
 import Cards from '@/_components/Cards';
+import { Button } from '@mui/material';
+import styles from './index.module.css';
 
 type Props = {
   filters?: string;
@@ -12,15 +15,10 @@ type Props = {
 };
 
 export const ReadMore: FC<Props> = ({ filters, q, totalCount }) => {
-  const [contents, setContents] = useState<Article[]>([]);
+  const [contents, setContents] = useState<TransformedArticleDetailResponse[]>([]);
   const [offset, setOffset] = useState<number>(LIMIT);
   const getNextContents = useCallback(async () => {
-    const data = await getArticleList({
-      limit: LIMIT,
-      offset,
-      filters,
-      q,
-    });
+    const data = await fetchArticleListData(LIMIT, offset, filters, q);
     setContents((prev) => [...prev, ...data.contents]);
     setOffset((prev) => prev + LIMIT);
   }, [offset, filters, q]);
@@ -30,9 +28,13 @@ export const ReadMore: FC<Props> = ({ filters, q, totalCount }) => {
   }
 
   return (
-    <div>
-      <Cards articles={contents} />
-      {totalCount > offset && <button onClick={getNextContents}>もっと読む</button>}
+    <div className={styles.readMore}>
+      {contents.length > 0 && <Cards articles={contents} />}
+      {totalCount > offset && (
+        <Button variant="outlined" onClick={getNextContents}>
+          もっと読む
+        </Button>
+      )}
     </div>
   );
 };

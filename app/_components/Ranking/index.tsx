@@ -1,4 +1,4 @@
-import { getRanking } from '@/_libs/microcms';
+import { fetchRankingData } from '@/_libs/anti-corruption-layer/ranking';
 import { RANKING_LIMIT } from '@/_constants';
 import List from '@/_components/List';
 
@@ -7,10 +7,7 @@ type Props = {
 };
 
 export default async function Ranking({ draftKey }: Props) {
-  const data = await getRanking({
-    limit: RANKING_LIMIT,
-    draftKey,
-  }).catch(() => ({ articles: [] }));
+  const data = await fetchRankingData(RANKING_LIMIT, draftKey).catch(() => ({ articles: [] }));
   const articles = data.articles;
   return (
     <div>
