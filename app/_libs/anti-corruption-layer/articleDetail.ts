@@ -1,4 +1,3 @@
-import { ca } from 'date-fns/locale';
 import { Article, getArticleDetail } from '../microcms';
 import { ArticleDetailResponse, fetchArticleDetail } from '../nilto/articleDetail';
 import { TYPE_CMS, TypeCMS } from '../utils';
