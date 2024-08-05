@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Article } from '@/_libs/microcms';
+import { TransformedArticleDetailResponse } from '@/_libs/anti-corruption-layer/articleDetail';
 import PublishDate from '@/_components/PublishDate';
 import styles from './index.module.css';
 
 type Props = {
-  article: Article;
+  article: TransformedArticleDetailResponse;
 };
 
 export default function List({ article }: Props) {

@@ -1,6 +1,7 @@
 import { Article, getArticleDetail } from '../microcms';
 import { ArticleDetailResponse, fetchArticleDetail } from '../nilto/articleDetail';
 import { TYPE_CMS, TypeCMS } from '../utils';
+import { CMS } from '@/_constants';
 
 const THUMBNAIL_WIDTH = 800;
 const THUMBNAIL_HEIGHT = 600;
@@ -49,9 +50,9 @@ export const fetchArticleDetailCMSData = async (
   draftKey?: string,
 ) => {
   switch (typeCMS) {
-    case 'nilto':
+    case CMS.NILTO:
       return await fetchArticleDetail(id);
-    case 'microcms':
+    case CMS.MICROCMS:
       return await getArticleDetail(id, {
         draftKey: draftKey,
       });
@@ -70,7 +71,9 @@ const createThumbnail = (
   height,
 });
 
-const transformNiltoData = (niltoData: ArticleDetailResponse): TransformedArticleDetailResponse => {
+export const transformNiltoData = (
+  niltoData: ArticleDetailResponse,
+): TransformedArticleDetailResponse => {
   const thumbnail = niltoData.thumbnail ? createThumbnail(niltoData.thumbnail.url) : null;
 
   const category = niltoData.category
@@ -133,7 +136,7 @@ const transformNiltoData = (niltoData: ArticleDetailResponse): TransformedArticl
   };
 };
 
-const transformMicroCMSData = (microCMSData: Article): TransformedArticleDetailResponse => {
+export const transformMicroCMSData = (microCMSData: Article): TransformedArticleDetailResponse => {
   const thumbnail = microCMSData.thumbnail
     ? createThumbnail(
         microCMSData.thumbnail.url,
@@ -186,9 +189,9 @@ export const transformResponse = (
   typeCMS: TypeCMS,
 ): TransformedArticleDetailResponse => {
   switch (typeCMS) {
-    case 'nilto':
+    case CMS.NILTO:
       return transformNiltoData(data as ArticleDetailResponse);
-    case 'microcms':
+    case CMS.MICROCMS:
       return transformMicroCMSData(data as Article);
     default:
       throw new Error('Unsupported CMS type');

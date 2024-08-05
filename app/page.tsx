@@ -3,7 +3,7 @@ import Main from '@/_components/Main';
 import Sub from '@/_components/Sub';
 import Ad from '@/_components/Ad';
 import { LIMIT } from '@/_constants';
-import { getArticleList } from '@/_libs/microcms';
+import { fetchArticleListData } from '@/_libs/anti-corruption-layer/articleList';
 import Cards from '@/_components/Cards';
 import Ranking from '@/_components/Ranking';
 import SearchField from '@/_components/SearchField';
@@ -20,9 +20,7 @@ type Props = {
 };
 
 export default async function Page({ searchParams }: Props) {
-  const data = await getArticleList({
-    limit: LIMIT,
-  });
+  const data = await fetchArticleListData(LIMIT);
   return (
     <Layout>
       <Main>
