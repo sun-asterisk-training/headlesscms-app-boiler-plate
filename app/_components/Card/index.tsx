@@ -16,11 +16,11 @@ type Props = {
     | Article // TODO: すべてのページでmicrocmsとniltoの切り替え対応が完了後、型Articleは不要になるはずなので削除する
     | {
         id: string;
-        title: string;
-        description: string;
+        title?: string;
+        description?: string;
         thumbnail: {
           url: string;
-        };
+        } | null;
         publishedAt?: string | null;
         createdAt: string;
       };
@@ -30,14 +30,20 @@ export default function CustomCard({ article }: Props) {
   return (
     <Card>
       <CardActionArea component={Link} href={`/articles/${article.id}`}>
-        <CardMedia component="img" height="140" image={article.thumbnail.url} alt="" />
+        {article.thumbnail && (
+          <CardMedia component="img" height="140" image={article.thumbnail.url} alt="" />
+        )}
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {article.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {article.description}
-          </Typography>
+          {article.title && (
+            <Typography gutterBottom variant="h5" component="div">
+              {article.title}
+            </Typography>
+          )}
+          {article.description && (
+            <Typography variant="body2" color="text.secondary">
+              {article.description}
+            </Typography>
+          )}
         </CardContent>
       </CardActionArea>
       <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>

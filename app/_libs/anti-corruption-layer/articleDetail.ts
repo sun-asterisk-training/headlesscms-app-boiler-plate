@@ -2,18 +2,21 @@ import { Article, getArticleDetail } from '../microcms';
 import { ArticleDetailResponse, fetchArticleDetail } from '../nilto/articleDetail';
 import { TYPE_CMS, TypeCMS } from '../utils';
 
+const THUMBNAIL_WIDTH = 800;
+const THUMBNAIL_HEIGHT = 600;
+
 // 記事詳細の型定義
 export type TransformedArticleDetailResponse = {
   id: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   publishedAt?: string | null;
   createdAt: string;
   thumbnail: {
     url: string;
     width: number;
     height: number;
-  };
+  } | null;
   category: {
     id: string;
     name: string;
@@ -33,7 +36,7 @@ export type TransformedArticleDetailResponse = {
     description: string;
     thumbnail: {
       url: string;
-    };
+    } | null;
     publishedAt?: string | null;
     createdAt: string;
   }[];
@@ -57,28 +60,64 @@ export const fetchArticleDetailCMSData = async (
   }
 };
 
-const createThumbnail = (url: string, width: number = 800, height: number = 600) => ({
+const createThumbnail = (
+  url: string,
+  width: number = THUMBNAIL_WIDTH,
+  height: number = THUMBNAIL_HEIGHT,
+) => ({
   url,
   width,
   height,
 });
 
 const transformNiltoData = (niltoData: ArticleDetailResponse): TransformedArticleDetailResponse => {
-  const content: { fieldId: string; richEditor?: string; ad?: boolean }[] = [];
+  const thumbnail = niltoData.thumbnail ? createThumbnail(niltoData.thumbnail.url) : null;
 
-  niltoData.content.forEach((item) => {
-    if (item.luid === 'rich_editor') {
-      content.push({
-        fieldId: 'richEditor',
-        richEditor: item.fields.rich_editor,
-      });
-    } else if (item.luid === 'ad') {
-      content.push({
-        fieldId: 'ad',
-        ad: item.fields.ad,
-      });
-    }
-  });
+  const category = niltoData.category
+    ? {
+        id: niltoData.category._id.toString(),
+        name: niltoData.category.name,
+      }
+    : null;
+
+  const tags = niltoData.tags
+    .filter((tag) => tag.tag) // MEMO: タグが未選択(null)の場合があるので除外
+    .map((tag) => ({
+      id: tag.tag._id.toString(),
+      name: tag.tag.name,
+    }));
+
+  const content = niltoData.content
+    .map((item) => {
+      if (item.luid === 'rich_editor' && item.fields.rich_editor) {
+        return {
+          fieldId: 'richEditor',
+          richEditor: item.fields.rich_editor,
+        };
+      } else if (item.luid === 'ad' && item.fields.ad !== undefined) {
+        return {
+          fieldId: 'ad',
+          ad: item.fields.ad,
+        };
+      }
+      return null;
+    })
+    .filter((item) => item) as { fieldId: string; richEditor?: string; ad?: boolean }[]; // MEMO: nullを除外
+
+  const relatedArticles = niltoData.related_articles
+    .filter((article) => article.related_article) // MEMO: 関連記事が未選択(null)の場合があるので除外
+    .map((article) => ({
+      id: article.related_article._id.toString(),
+      title: article.related_article.title,
+      description: article.related_article.description,
+      thumbnail: article.related_article.thumbnail
+        ? {
+            url: article.related_article.thumbnail.url,
+          }
+        : null,
+      publishedAt: article.related_article._published_at,
+      createdAt: article.related_article._created_at,
+    }));
 
   return {
     id: niltoData._id.toString(),
@@ -86,62 +125,61 @@ const transformNiltoData = (niltoData: ArticleDetailResponse): TransformedArticl
     description: niltoData.description,
     publishedAt: niltoData._published_at,
     createdAt: niltoData._created_at,
-    thumbnail: createThumbnail(niltoData.thumbnail.url),
-    category: {
-      id: niltoData.category._id.toString(),
-      name: niltoData.category.name,
-    },
-    tags: niltoData.tags.map((tag) => ({
-      id: tag.tag._id.toString(),
-      name: tag.tag.name,
-    })),
+    thumbnail: thumbnail,
+    category: category,
+    tags: tags,
     content: content,
-    relatedArticles: niltoData.related_articles.map((article) => ({
-      id: article.related_article._id.toString(),
-      title: article.related_article.title,
-      description: article.related_article.description,
-      thumbnail: {
-        url: article.related_article.thumbnail.url,
-      },
-      publishedAt: article.related_article._published_at,
-      createdAt: article.related_article._created_at,
-    })),
+    relatedArticles: relatedArticles,
   };
 };
 
-const transformMicroCMSData = (microCMSData: Article): TransformedArticleDetailResponse => ({
-  id: microCMSData.id,
-  title: microCMSData.title,
-  description: microCMSData.description,
-  publishedAt: microCMSData.publishedAt,
-  createdAt: microCMSData.createdAt,
-  thumbnail: createThumbnail(
-    microCMSData.thumbnail.url,
-    microCMSData.thumbnail.width,
-    microCMSData.thumbnail.height,
-  ),
-  category: microCMSData.category
+const transformMicroCMSData = (microCMSData: Article): TransformedArticleDetailResponse => {
+  const thumbnail = microCMSData.thumbnail
+    ? createThumbnail(
+        microCMSData.thumbnail.url,
+        microCMSData.thumbnail.width,
+        microCMSData.thumbnail.height,
+      )
+    : null;
+
+  const category = microCMSData.category
     ? {
         id: microCMSData.category.id,
         name: microCMSData.category.name,
       }
-    : null,
-  tags: microCMSData.tags.map((tag) => ({
+    : null;
+
+  const tags = microCMSData.tags.map((tag) => ({
     id: tag.id,
     name: tag.name,
-  })),
-  content: microCMSData.content,
-  relatedArticles: microCMSData.relatedArticles.map((article) => ({
+  }));
+
+  const relatedArticles = microCMSData.relatedArticles.map((article) => ({
     id: article.id,
     title: article.title,
     description: article.description,
-    thumbnail: {
-      url: article.thumbnail.url,
-    },
+    thumbnail: article.thumbnail
+      ? {
+          url: article.thumbnail.url,
+        }
+      : null,
     publishedAt: article.publishedAt,
     createdAt: article.createdAt,
-  })),
-});
+  }));
+
+  return {
+    id: microCMSData.id,
+    title: microCMSData.title,
+    description: microCMSData.description,
+    publishedAt: microCMSData.publishedAt,
+    createdAt: microCMSData.createdAt,
+    thumbnail: thumbnail,
+    category: category,
+    tags: tags,
+    content: microCMSData.content,
+    relatedArticles: relatedArticles,
+  };
+};
 
 export const transformResponse = (
   data: ArticleDetailResponse | Article,

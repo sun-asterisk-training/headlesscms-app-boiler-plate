@@ -5,6 +5,7 @@ import type {
   MicroCMSDate,
   MicroCMSContentId,
 } from 'microcms-js-sdk';
+import { notFound } from 'next/navigation';
 
 // タグの型定義
 export type Tag = {
@@ -79,11 +80,15 @@ export const getArticleList = async (queries?: MicroCMSQueries) => {
 
 // 記事詳細を取得
 export const getArticleDetail = async (contentId: string, queries?: MicroCMSQueries) => {
-  const detailData = await client.getListDetail<Article>({
-    endpoint: 'articles',
-    contentId,
-    queries,
-  });
+  const detailData = await client
+    .getListDetail<Article>({
+      endpoint: 'articles',
+      contentId,
+      queries,
+    })
+    .catch(() => {
+      notFound();
+    });
   return detailData;
 };
 

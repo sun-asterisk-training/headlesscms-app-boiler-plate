@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation';
+
 type Category = {
   _id: number;
   name: string;
@@ -55,9 +57,7 @@ if (!apiKey) {
   throw new Error('NEXT_PUBLIC_NILTO_API_KEY is required');
 }
 
-export const fetchArticleDetail = async (
-  articleId: string,
-): Promise<ArticleDetailResponse | null> => {
+export const fetchArticleDetail = async (articleId: string): Promise<ArticleDetailResponse> => {
   try {
     const headers = new Headers();
     headers.append('X-NILTO-API-KEY', apiKey);
@@ -66,13 +66,14 @@ export const fetchArticleDetail = async (
       headers: headers,
     });
 
-    if (!response) {
-      throw new Error('Failed to fetch article details');
+    if (response.status !== 200) {
+      throw new Error(`Error: fetch API response status: ${response.status}`);
     }
 
     const data: ArticleDetailResponse = await response.json();
     return data;
   } catch (error) {
-    return null;
+    console.error(error);
+    return notFound();
   }
 };
