@@ -4,7 +4,6 @@ import { useCallback, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import TextField from '@mui/material/TextField';
 
-
 export default function SearchField() {
   const [composing, setComposition] = useState(false);
   const startComposition = () => setComposition(true);
@@ -27,7 +26,7 @@ export default function SearchField() {
       type="search"
       variant="filled"
       name="q"
-      ref={inputRef}
+      inputRef={inputRef}
       placeholder="Search..."
       onKeyDown={_onEnter}
       onCompositionStart={startComposition}
